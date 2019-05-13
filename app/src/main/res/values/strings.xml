@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">PickleTax</string>
+
+    <!--activity_main-->
+    <string name="activity_main_button_update">Обновить</string>
+    <string name="activity_main_button_classrooms">Аудитории</string>
+    <string name="activity_main_button_change_status">Изменить статус</string>
+    <string name="activity_main_button_authorization">Авторизация</string>
+
 </resources>
