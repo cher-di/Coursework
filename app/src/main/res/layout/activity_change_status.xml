@@ -1,9 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ChangeStatusActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <Spinner
+        android:id="@+id/activity_change_status_spinner_campus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"></Spinner>
+
+    <Spinner
+        android:id="@+id/activity_change_status_spinner_classroom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"></Spinner>
+
+    <TextView
+        android:id="@+id/activity_change_status_textview_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="Статус"
+        android:textSize="24dp" />
+
+    <TextView
+        android:id="@+id/activity_change_status_textview_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Описание" />
+
+    <EditText
+        android:id="@+id/activity_change_status_edittext_add_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:hint="@string/activity_change_status_edittext_add_description" />
+
+    <Button
+        android:id="@+id/activity_change_status_button_change_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="Изменть статус" />
+
+</android.support.v7.widget.LinearLayoutCompat>

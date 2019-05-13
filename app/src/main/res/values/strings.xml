@@ -17,5 +17,13 @@
     <string name="activity_auth_button_getcode">Получить код</string>
     <string name="activity_auth_edittext_entercode">Введите код из письма</string>
     <string name="activity_auth_button_ackauth">Подтвердить авторизацию</string>
+    
+    <!--activity_classrooms-->
+    <string name="activity_classrooms_radiobutton_free">Свободна</string>
+    <string name="activity_classrooms_radiobutton_busy">Занята</string>
+    <string name="activity_classrooms_button_search">Найти</string>
+
+    <!--activity_change_status-->
+    <string name="activity_change_status_edittext_add_description">Добавить описание</string>
 
 </resources>

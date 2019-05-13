@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
+        android:onClick="onClickButtonClassrooms"
         android:text="@string/activity_main_button_classrooms"
         android:textSize="@dimen/activity_main_button_textsize" />
 
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
+        android:onClick="onClickButtonChangeStatus"
         android:text="@string/activity_main_button_change_status"
         android:textSize="@dimen/activity_main_button_textsize" />
 

@@ -21,11 +21,21 @@ public class MainActivity extends AppCompatActivity {
         // TODO замени на рабочий код
     }
 
+    public void onClickButtonClassrooms(View view) {
+        Intent intent = new Intent(this, ClassroomsActivity.class);
+        startActivity(intent);
+        // TODO замени на рабочий код
+    }
+
+    public void onClickButtonChangeStatus(View view) {
+        Intent intent = new Intent(this, ChangeStatusActivity.class);
+        startActivity(intent);
+        // TODO замени на рабочий код
+    }
 
     public void onClickButtonAuth(View view) {
         Intent intent = new Intent(this, AuthActivity.class);
         startActivity(intent);
         // TODO замени на рабочий код
     }
-
 }

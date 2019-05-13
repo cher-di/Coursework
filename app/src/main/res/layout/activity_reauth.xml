@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:textSize="30dp"
-        android:text="Test text"/>
+        android:text="Вы авторизованы"/>
 
     <Button
         android:layout_width="match_parent"
