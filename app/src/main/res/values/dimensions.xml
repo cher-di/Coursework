@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--activity_main-->
+    <dimen name="activity_main_button_textsize">20dp</dimen>
 
+    <!--activity_auth-->
+    <dimen name="activity_auth_button_textsize">16dp</dimen>
+    <dimen name="activity_auth_edittext_textsize">18dp</dimen>
 </resources>

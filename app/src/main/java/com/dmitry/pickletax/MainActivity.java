@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClickButtonAuth(View view) {
-        Intent intent = new Intent(this, ReauthActivity.class);
+        Intent intent = new Intent(this, AuthActivity.class);
         startActivity(intent);
         // TODO замени на рабочий код
     }

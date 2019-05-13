@@ -1,9 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".AuthActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/activity_auth_textview_notauth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/activity_auth_textview_notauth"
+        android:textSize="24dp" />
+
+    <EditText
+        android:id="@+id/activity_auth_edittext_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:hint="@string/activity_auth_edittext_city"
+        android:textSize="@dimen/activity_auth_edittext_textsize" />
+
+    <EditText
+        android:id="@+id/activity_auth_edittext_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:hint="@string/activity_auth_edittext_email"
+        android:textSize="@dimen/activity_auth_edittext_textsize" />
+
+    <Button
+        android:id="@+id/activity_auth_button_getcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="@string/activity_auth_button_getcode"
+        android:textSize="@dimen/activity_auth_button_textsize" />
+
+    <EditText
+        android:id="@+id/activity_auth_edittext_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:hint="@string/activity_auth_edittext_entercode"
+        android:textSize="@dimen/activity_auth_edittext_textsize" />
+
+    <Button
+        android:id="@+id/activity_auth_button_ackauth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="@string/activity_auth_button_ackauth"
+        android:textSize="@dimen/activity_auth_button_textsize" />
+
+</android.support.v7.widget.LinearLayoutCompat>

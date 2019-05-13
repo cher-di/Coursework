@@ -10,4 +10,12 @@
     <!--activity_reauth-->
     <string name="activity_reauth_button">Выйти из аккаунта</string>
 
+    <!--activity_auth-->
+    <string name="activity_auth_textview_notauth">Вы не авторизованы</string>
+    <string name="activity_auth_edittext_city">Введите город</string>
+    <string name="activity_auth_edittext_email">Введите свой корпоративный e-mail</string>
+    <string name="activity_auth_button_getcode">Получить код</string>
+    <string name="activity_auth_edittext_entercode">Введите код из письма</string>
+    <string name="activity_auth_button_ackauth">Подтвердить авторизацию</string>
+
 </resources>
