@@ -1,5 +1,6 @@
 package com.dmitry.pickletax;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,11 +15,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void noClickButtonUpdate(View view) {
+    public void onClickButtonUpdate(View view) {
         Toast toast = Toast.makeText(this, "Update button pressed", Toast.LENGTH_SHORT);
         toast.show();
         // TODO замени на рабочий код
     }
 
+
+    public void onClickButtonAuth(View view) {
+        Intent intent = new Intent(this, ReauthActivity.class);
+        startActivity(intent);
+        // TODO замени на рабочий код
+    }
 
 }

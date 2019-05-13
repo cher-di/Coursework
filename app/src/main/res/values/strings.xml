@@ -7,4 +7,7 @@
     <string name="activity_main_button_change_status">Изменить статус</string>
     <string name="activity_main_button_authorization">Авторизация</string>
 
+    <!--activity_reauth-->
+    <string name="activity_reauth_button">Выйти из аккаунта</string>
+
 </resources>
