@@ -7,17 +7,28 @@ import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+    private DBHelper mDBHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDBHelper = new DBHelper(this);
     }
 
 
     public void onClickButtonUpdate(View view) {
-        Toast toast = Toast.makeText(this, "Update button pressed", Toast.LENGTH_SHORT);
-        toast.show();
+//        Toast toast = Toast.makeText(this, "Update button pressed", Toast.LENGTH_SHORT);
+//        toast.show();
+        if (mDBHelper.isAuthorized()) {
+            Intent intent = new Intent(this, ReauthActivity.class);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+        }
         // TODO замени на рабочий код
     }
 
