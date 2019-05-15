@@ -26,6 +26,9 @@ public class AuthActivity extends AppCompatActivity {
     private Button ackAuthButton;
     private String emailValidationRegex = ".+@.+\\..+";
 
+    private Integer VALIDATION_ACK = 250;
+    private Integer VALIDATION_FAIL = 450;
+
     public class AuthValues {
         @SerializedName("email")
         @Expose
@@ -84,13 +87,39 @@ public class AuthActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
+                    AuthActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast toast = Toast.makeText(AuthActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, final Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        throw new IOException("Unexpected code " + response);
-                    }
+                    AuthActivity.this.runOnUiThread(new Runnable() {
+                        final Integer responseCode = response.code();
+
+                        @Override
+                        public void run() {
+                            if (responseCode == VALIDATION_FAIL) {
+                                Toast toast = Toast.makeText(AuthActivity.this, "Невалидный город или Email", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                            else if (responseCode == VALIDATION_ACK) {
+                                editCode.setEnabled(true);
+                                ackAuthButton.setEnabled(true);
+
+                                Toast toast = Toast.makeText(AuthActivity.this, "Сообщение с кодом отправлено на указанный адрес", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                            else {
+                                Toast toast = Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        }
+                    });
                 }
             });
         }
