@@ -28,6 +28,8 @@ public class AuthActivity extends AppCompatActivity {
 
     private Integer VALIDATION_ACK = 250;
     private Integer VALIDATION_FAIL = 450;
+    private Integer CODE_ACK = 251;
+    private Integer CODE_FAIL = 451;
 
     public class AuthValues {
         @SerializedName("email")
@@ -124,5 +126,62 @@ public class AuthActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+    public void onClickButtonACKAuth(View view) {
+        String code = editCode.getText().toString();
+        if (code.isEmpty()) {
+            Toast toast = Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            String json = "{\"code\" : \"" + code + "\"}";
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("message", json)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(getString(R.string.url_auth))
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    AuthActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast toast = Toast.makeText(AuthActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(Call call, final Response response) throws IOException {
+                    AuthActivity.this.runOnUiThread(new Runnable() {
+                        final Integer responseCode = response.code();
+
+                        @Override
+                        public void run() {
+                            if (responseCode == CODE_FAIL) {
+                                Toast toast = Toast.makeText(AuthActivity.this, "Неверный код авторизации", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                            else if (responseCode == CODE_ACK) {
+                                AuthActivity.this.finish();
+                                // TODO добавь возврат результата в MainActivity
+                            }
+                            else {
+                                Toast toast = Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 }

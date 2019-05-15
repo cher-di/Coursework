@@ -62,6 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
+        android:onClick="onClickButtonACKAuth"
         android:text="@string/activity_auth_button_ackauth"
         android:textSize="@dimen/activity_auth_button_textsize" />
 
