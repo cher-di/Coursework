@@ -29,8 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SERVICE_VAR = "CREATE TABLE service_var" +
             "(email TEXT NOT NULL, " +
             "city TEXT NOT NULL, " +
-            "youngest_update TEXT NOT NULL, " +
-            "oldest_update TEXT NOT NULL, " +
+            "youngest_update TEXT, " +
+            "oldest_update TEXT, " +
             "PRIMARY KEY(email, city));";
 
     private static final class Factory implements SQLiteDatabase.CursorFactory {
@@ -140,6 +140,17 @@ public class DBHelper extends SQLiteOpenHelper {
             }
             db.close();
         }
+    }
+
+    public void addServiceVars(AuthValues authValues) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            ContentValues values = new ContentValues();
+            values.put("email", authValues.email);
+            values.put("city", authValues.city);
+            db.insert("service_var", null, values);
+        }
+        db.close();
     }
 
     public boolean isAuthorized() {

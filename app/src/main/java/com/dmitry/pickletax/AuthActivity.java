@@ -1,5 +1,6 @@
 package com.dmitry.pickletax;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,31 +22,24 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.dmitry.pickletax.Constants.*;
+
 public class AuthActivity extends AppCompatActivity {
+    private EditText editCity;
+    private EditText editEmail;
     private EditText editCode;
     private Button ackAuthButton;
     private String emailValidationRegex = ".+@.+\\..+";
 
-    private Integer VALIDATION_ACK = 250;
-    private Integer VALIDATION_FAIL = 450;
-    private Integer CODE_ACK = 251;
-    private Integer CODE_FAIL = 451;
-
-    public class AuthValues {
-        @SerializedName("email")
-        @Expose
-        public String email;
-
-        @SerializedName("city")
-        @Expose
-        public String city;
-    }
+    private AuthValues ackAuthValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
+        editCity = (EditText) findViewById(R.id.activity_auth_edittext_city);
+        editEmail = (EditText) findViewById(R.id.activity_auth_edittext_email);
         editCode = (EditText) findViewById(R.id.activity_auth_edittext_code);
         editCode.setEnabled(false);
         ackAuthButton = (Button) findViewById(R.id.activity_auth_button_ackauth);
@@ -53,9 +47,6 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     public void onClickButtonGetCode(View view) {
-        EditText editCity = (EditText) findViewById(R.id.activity_auth_edittext_city);
-        EditText editEmail = (EditText) findViewById(R.id.activity_auth_edittext_email);
-
         if (editCity.getText().toString().isEmpty()) {
             Toast toast = Toast.makeText(this, getString(R.string.activity_auth_edittext_city), Toast.LENGTH_SHORT);
             toast.show();
@@ -66,9 +57,7 @@ public class AuthActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, getString(R.string.activity_auth_nonvalid_email), Toast.LENGTH_SHORT);
             toast.show();
         } else {
-//            Toast toast = Toast.makeText(this, "Send query to the server", Toast.LENGTH_SHORT);
-//            toast.show();
-            AuthValues authValues = new AuthValues();
+            final AuthValues authValues = new AuthValues();
             authValues.city = editCity.getText().toString();
             authValues.email = editEmail.getText().toString();
 
@@ -108,15 +97,15 @@ public class AuthActivity extends AppCompatActivity {
                             if (responseCode == VALIDATION_FAIL) {
                                 Toast toast = Toast.makeText(AuthActivity.this, "Невалидный город или Email", Toast.LENGTH_SHORT);
                                 toast.show();
-                            }
-                            else if (responseCode == VALIDATION_ACK) {
+                            } else if (responseCode == VALIDATION_ACK) {
                                 editCode.setEnabled(true);
                                 ackAuthButton.setEnabled(true);
 
+                                ackAuthValues = authValues;
+
                                 Toast toast = Toast.makeText(AuthActivity.this, "Сообщение с кодом отправлено на указанный адрес", Toast.LENGTH_SHORT);
                                 toast.show();
-                            }
-                            else {
+                            } else {
                                 Toast toast = Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT);
                                 toast.show();
                             }
@@ -133,8 +122,7 @@ public class AuthActivity extends AppCompatActivity {
         if (code.isEmpty()) {
             Toast toast = Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT);
             toast.show();
-        }
-        else {
+        } else {
             String json = "{\"code\" : \"" + code + "\"}";
             OkHttpClient client = new OkHttpClient();
 
@@ -169,12 +157,13 @@ public class AuthActivity extends AppCompatActivity {
                             if (responseCode == CODE_FAIL) {
                                 Toast toast = Toast.makeText(AuthActivity.this, "Неверный код авторизации", Toast.LENGTH_SHORT);
                                 toast.show();
-                            }
-                            else if (responseCode == CODE_ACK) {
+                            } else if (responseCode == CODE_ACK) {
+                                Intent intent = new Intent();
+                                intent.putExtra(EMAIL_IDENTIFIER, ackAuthValues.email);
+                                intent.putExtra(CITY_IDENTIFIER, ackAuthValues.city);
+                                setResult(AUTH_RESULT_ACK, intent);
                                 AuthActivity.this.finish();
-                                // TODO добавь возврат результата в MainActivity
-                            }
-                            else {
+                            } else {
                                 Toast toast = Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT);
                                 toast.show();
                             }
