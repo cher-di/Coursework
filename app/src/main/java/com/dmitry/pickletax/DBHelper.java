@@ -1,6 +1,5 @@
 package com.dmitry.pickletax;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,6 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SERVICE_VAR = "CREATE TABLE service_var" +
             "(email TEXT NOT NULL, " +
             "city TEXT NOT NULL, " +
+            "youngest_update TEXT NOT NULL, " +
+            "oldest_update TEXT NOT NULL, " +
             "PRIMARY KEY(email, city));";
 
     private static final class Factory implements SQLiteDatabase.CursorFactory {
@@ -49,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) { ;
+    public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_CAMPUSES);
         db.execSQL(CREATE_TABLE_CLASSROOMS);
         db.execSQL(CREATE_TABLE_SCHEDULE);
@@ -144,14 +145,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean isAuthorized() {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
-            try {
-                Cursor cursor = (Cursor) db.rawQuery("SELECT COUNT(*) FROM service_var", null);
-                cursor.moveToFirst();
-                if (cursor.getInt(0) > 0) return true;
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            Cursor cursor = (Cursor) db.rawQuery("SELECT COUNT(*) FROM service_var", null);
+            cursor.moveToFirst();
+            int num = cursor.getInt(0);
+            cursor.close();
+            if (num > 0) return true;
         }
         return false;
     }
