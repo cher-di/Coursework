@@ -19,17 +19,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClickButtonUpdate(View view) {
-//        Toast toast = Toast.makeText(this, "Update button pressed", Toast.LENGTH_SHORT);
-//        toast.show();
         if (mDBHelper.isAuthorized()) {
-            Intent intent = new Intent(this, ReauthActivity.class);
-            startActivity(intent);
+            Toast toast = Toast.makeText(this, R.string.activity_main_is_auth, Toast.LENGTH_SHORT);
+            toast.show();
+            // TODO замени на рабочий код
         }
         else {
-            Intent intent = new Intent(this, AuthActivity.class);
-            startActivity(intent);
+            Toast toast = Toast.makeText(this, R.string.activity_main_is_not_auth, Toast.LENGTH_SHORT);
+            toast.show();
         }
-        // TODO замени на рабочий код
     }
 
     public void onClickButtonClassrooms(View view) {
@@ -45,8 +43,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickButtonAuth(View view) {
-        Intent intent = new Intent(this, AuthActivity.class);
-        startActivity(intent);
-        // TODO замени на рабочий код
+        if (mDBHelper.isAuthorized()) {
+            Intent intent = new Intent(this, ReauthActivity.class);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+        }
     }
 }

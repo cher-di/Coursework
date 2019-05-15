@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
+        android:onClick="onClickButtonGetCode"
         android:text="@string/activity_auth_button_getcode"
         android:textSize="@dimen/activity_auth_button_textsize" />
 

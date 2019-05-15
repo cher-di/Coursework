@@ -6,6 +6,8 @@
     <string name="activity_main_button_classrooms">Аудитории</string>
     <string name="activity_main_button_change_status">Изменить статус</string>
     <string name="activity_main_button_authorization">Авторизация</string>
+    <string name="activity_main_is_auth">Вы авторизованы</string>
+    <string name="activity_main_is_not_auth">Вы не авторизованы</string>
 
     <!--activity_reauth-->
     <string name="activity_reauth_button">Выйти из аккаунта</string>
@@ -13,11 +15,12 @@
     <!--activity_auth-->
     <string name="activity_auth_textview_notauth">Вы не авторизованы</string>
     <string name="activity_auth_edittext_city">Введите город</string>
-    <string name="activity_auth_edittext_email">Введите свой корпоративный e-mail</string>
+    <string name="activity_auth_edittext_email">Введите свой корпоративный Email</string>
     <string name="activity_auth_button_getcode">Получить код</string>
     <string name="activity_auth_edittext_entercode">Введите код из письма</string>
     <string name="activity_auth_button_ackauth">Подтвердить авторизацию</string>
-    
+    <string name="activity_auth_nonvalid_email">Неверный формат Email</string>
+
     <!--activity_classrooms-->
     <string name="activity_classrooms_radiobutton_free">Свободна</string>
     <string name="activity_classrooms_radiobutton_busy">Занята</string>
@@ -25,5 +28,10 @@
 
     <!--activity_change_status-->
     <string name="activity_change_status_edittext_add_description">Добавить описание</string>
+
+    <!--url-->
+    <string name="url_update"></string>
+    <string name="url_change_status"></string>
+    <string name="url_auth">https://mail.ru</string>
 
 </resources>
