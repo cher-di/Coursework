@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import static com.dmitry.pickletax.Constants.CLASSROOM_FREE;
+
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "main_database";
     public static final int DB_VER = 1;
@@ -238,6 +240,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     db.insert("classrooms", null, contentValues);
                 }
                 contentValues.clear();
+            }
+
+            for (Integer lesson_number = 1; lesson_number <= initDBObject.max_lesson_number;) {
+                db.execSQL("INSERT INTO schedule SELECT id, ?, ?, NULL FROM classrooms;",
+                        new String[]{lesson_number.toString(), CLASSROOM_FREE.toString()});
             }
 
             db.close();
