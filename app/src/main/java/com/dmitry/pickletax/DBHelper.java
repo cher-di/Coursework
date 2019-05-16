@@ -2,7 +2,6 @@ package com.dmitry.pickletax;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
@@ -45,38 +44,6 @@ public class DBHelper extends SQLiteOpenHelper {
             "PRIMARY KEY(email, city));";
 
     private static final String TABLES_NAMES[] = {"campuses", "classrooms", "schedule", "service_vars", "classrooms_types"};
-
-    private class InitDBObject {
-        public class Campus {
-            @SerializedName("name")
-            @Expose
-            public String name;
-
-            @SerializedName("classrooms")
-            @Expose
-            public Classroom classrooms[];
-        }
-
-        @SerializedName("campuses")
-        @Expose
-        public Campus campuses[];
-
-        @SerializedName("classrooms_types")
-        @Expose
-        public String classrooms_types[];
-
-        @SerializedName("max_lesson_number")
-        @Expose
-        public Integer max_lesson_number;
-    }
-
-    private static final class Factory implements SQLiteDatabase.CursorFactory {
-
-        @Override
-        public Cursor newCursor(SQLiteDatabase sqLiteDatabase, SQLiteCursorDriver sqLiteCursorDriver, String s, SQLiteQuery sqLiteQuery) {
-            return new SQLiteCursor(sqLiteCursorDriver, s, sqLiteQuery);
-        }
-    }
 
     public DBHelper(Context context) {
         this(context, DB_NAME, new Factory(), DB_VER);
@@ -201,8 +168,7 @@ public class DBHelper extends SQLiteOpenHelper {
             authValues.city = cursor.getString(1);
             db.close();
             return authValues;
-        }
-        else {
+        } else {
             authValues.email = "email";
             authValues.email = "city";
             return authValues;
@@ -242,7 +208,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.clear();
             }
 
-            for (Integer lesson_number = 1; lesson_number <= initDBObject.max_lesson_number;) {
+            for (Integer lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; ) {
                 db.execSQL("INSERT INTO schedule SELECT id, ?, ?, NULL FROM classrooms;",
                         new String[]{lesson_number.toString(), CLASSROOM_FREE.toString()});
             }
@@ -274,11 +240,11 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Classroom[] getClassroomsFromSchedule(String campus, Integer status, Integer lesson_number) {
+    public Classroom[] getClassroomsForShow(String campus, Integer status, Integer lesson_number) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
-            Cursor cursor = db.rawQuery("SELECT name, type FROM schedule s, classrooms c " +
-                    "WHERE s.classroom_id = c.id AND " +
+            Cursor cursor = db.rawQuery("SELECT c.name, c.type FROM schedule s, classrooms c " +
+                            "WHERE s.classroom_id = c.id AND " +
                             "c.campus_name = ? AND " +
                             "s.status = ? AND " +
                             "s.lesson_number = ?;",
@@ -298,7 +264,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public String[] getCampuses() {
+    public String[] getCampusesForSpinner() {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT name FROM campuses;", null);
@@ -326,7 +292,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public Classroom[] getClassrooms(String campus) {
+    public Classroom[] getClassroomsForSpinner(String campus) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT name, type FROM classrooms WHERE campus_name = " + campus + ";", null);
@@ -344,6 +310,56 @@ public class DBHelper extends SQLiteOpenHelper {
             return classrooms;
         }
         return null;
+    }
+
+    public ScheduleItem getScheduleItemForChangeStatus(String campus, String name, Integer lesson_number) {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor cursor = db.rawQuery("SELECT c.id, s.status, s.description FROM schedule s, classrooms c " +
+                    "WHERE c.id = s.classroom_id AND " +
+                    "c.campus_name = ? AND " +
+                    "c.name = ? AND " +
+                    "s.lesson_number = ?;",
+                    new String[]{campus, name, lesson_number.toString()});
+
+            cursor.moveToFirst();
+            int id = cursor.getInt(0);
+            int status = cursor.getInt(1);
+            String description = cursor.getString(2);
+
+            return new ScheduleItem(id, lesson_number, status, description);
+        }
+        return null;
+    }
+
+    private static final class Factory implements SQLiteDatabase.CursorFactory {
+
+        @Override
+        public Cursor newCursor(SQLiteDatabase sqLiteDatabase, SQLiteCursorDriver sqLiteCursorDriver, String s, SQLiteQuery sqLiteQuery) {
+            return new SQLiteCursor(sqLiteCursorDriver, s, sqLiteQuery);
+        }
+    }
+
+    private class InitDBObject {
+        @SerializedName("campuses")
+        @Expose
+        public Campus campuses[];
+        @SerializedName("classrooms_types")
+        @Expose
+        public String classrooms_types[];
+        @SerializedName("max_lesson_number")
+        @Expose
+        public Integer max_lesson_number;
+
+        public class Campus {
+            @SerializedName("name")
+            @Expose
+            public String name;
+
+            @SerializedName("classrooms")
+            @Expose
+            public Classroom classrooms[];
+        }
     }
 
 }

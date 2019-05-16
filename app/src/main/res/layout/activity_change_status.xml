@@ -19,6 +19,12 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"></Spinner>
 
+    <Spinner
+        android:id="@+id/activity_change_status_spinner_lesson_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"></Spinner>
+
     <TextView
         android:id="@+id/activity_change_status_textview_status"
         android:layout_width="match_parent"
