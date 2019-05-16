@@ -210,7 +210,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
             for (Integer lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; ) {
                 db.execSQL("INSERT INTO schedule SELECT id, ?, ?, NULL FROM classrooms;",
-                        new String[]{lesson_number.toString(), CLASSROOM_FREE.toString()});
+                        new String[]{lesson_number.toString(), Integer.toString(CLASSROOM_FREE)});
             }
 
             db.close();

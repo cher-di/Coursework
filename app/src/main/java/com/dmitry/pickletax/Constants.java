@@ -3,21 +3,21 @@ package com.dmitry.pickletax;
 import okhttp3.MediaType;
 
 public interface Constants {
-    public static final Integer AUTH_REQUEST = 0;
-    public static final Integer AUTH_RESULT_ACK = 1;
-    public static final Integer AUTH_RESULT_FAIL = 2;
-    public static final Integer REAUTH_REQUEST = 3;
-    public static final Integer REAUTH_REQUEST_ACK = 4;
-    public static final Integer REAUTH_REQUEST_FAIL = 5;
+    public static final int AUTH_REQUEST = 0;
+    public static final int AUTH_RESULT_ACK = 1;
+    public static final int AUTH_RESULT_FAIL = 2;
+    public static final int REAUTH_REQUEST = 3;
+    public static final int REAUTH_REQUEST_ACK = 4;
+    public static final int REAUTH_REQUEST_FAIL = 5;
 
-    public static final Integer AUTH_VALIDATION_ACK = 250;
-    public static final Integer AUTH_VALIDATION_FAIL = 450;
-    public static final Integer AUTH_CODE_ACK = 251;
-    public static final Integer AUTH_CODE_FAIL = 451;
+    public static final int AUTH_VALIDATION_ACK = 250;
+    public static final int AUTH_VALIDATION_FAIL = 450;
+    public static final int AUTH_CODE_ACK = 251;
+    public static final int AUTH_CODE_FAIL = 451;
 
     // эти константы нельзя менять, т.к. они жестко зашиты в базе данных
-    public static final Integer CLASSROOM_FREE = 0;
-    public static final Integer CLASSROOM_BUSY = 1;
+    public static final int CLASSROOM_FREE = 0;
+    public static final int CLASSROOM_BUSY = 1;
 
     public static final String EMAIL_IDENTIFIER = "com.dmitry.pickletax.email_edintifier";
     public static final String CITY_IDENTIFIER = "com.dmitry.pickletax.city_identifier";
