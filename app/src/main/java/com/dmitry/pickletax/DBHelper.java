@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 
+
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "main_database";
     public static final int DB_VER = 1;
@@ -142,7 +143,9 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addServiceVars(AuthValues authValues) {
+    public void addServiceVars(AuthValues authValues) throws Exception {
+        if (isAuthorized())
+            throw new Exception("Tried to add new service values, while user is already authorized");
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues values = new ContentValues();
@@ -153,6 +156,24 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public AuthValues getServiceVars() {
+        SQLiteDatabase db = getReadableDatabase();
+        AuthValues authValues = new AuthValues();
+        if (db != null) {
+            Cursor cursor = (Cursor) db.rawQuery("SELECT email, city FROM service_var", null);
+            cursor.moveToFirst();
+            authValues.email = cursor.getString(0);
+            authValues.city = cursor.getString(1);
+            db.close();
+            return authValues;
+        }
+        else {
+            authValues.email = "email";
+            authValues.email = "city";
+            return authValues;
+        }
+    }
+
     public boolean isAuthorized() {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
@@ -160,9 +181,14 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.moveToFirst();
             int num = cursor.getInt(0);
             cursor.close();
+            db.close();
             if (num > 0) return true;
         }
         return false;
+    }
+
+    public void clearDatabase() {
+
     }
 
 }

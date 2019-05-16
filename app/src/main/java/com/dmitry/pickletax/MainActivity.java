@@ -1,16 +1,25 @@
 package com.dmitry.pickletax;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
 
-import static com.dmitry.pickletax.Constants.*;
+import static com.dmitry.pickletax.Constants.AUTH_REQUEST;
+import static com.dmitry.pickletax.Constants.AUTH_RESULT_ACK;
+import static com.dmitry.pickletax.Constants.CITY_IDENTIFIER;
+import static com.dmitry.pickletax.Constants.EMAIL_IDENTIFIER;
+import static com.dmitry.pickletax.Constants.REAUTH_REQUEST;
+import static com.dmitry.pickletax.Constants.REAUTH_REQUEST_ACK;
 
 public class MainActivity extends AppCompatActivity {
     private DBHelper mDBHelper;
+    private Button updateButton;
+    private Button classroomsButton;
+    private Button changeStatusButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,18 +27,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mDBHelper = new DBHelper(this);
+        updateButton = (Button)findViewById(R.id.activity_main_button_update);
+        classroomsButton = (Button)findViewById(R.id.activity_main_button_classrooms);
+        changeStatusButton= (Button)findViewById(R.id.activity_main_button_change_status);
+        if (!mDBHelper.isAuthorized()) {
+            updateButton.setEnabled(false);
+            classroomsButton.setEnabled(false);
+            changeStatusButton.setEnabled(false);
+        }
     }
 
 
     public void onClickButtonUpdate(View view) {
-        if (mDBHelper.isAuthorized()) {
-            Toast toast = Toast.makeText(this, R.string.activity_main_is_auth, Toast.LENGTH_SHORT);
-            toast.show();
-            // TODO замени на рабочий код
-        } else {
-            Toast toast = Toast.makeText(this, R.string.activity_main_is_not_auth, Toast.LENGTH_SHORT);
-            toast.show();
-        }
+
     }
 
     public void onClickButtonClassrooms(View view) {
@@ -46,8 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickButtonAuth(View view) {
         if (mDBHelper.isAuthorized()) {
+            AuthValues authValues = mDBHelper.getServiceVars();
+
             Intent intent = new Intent(this, ReauthActivity.class);
-            startActivity(intent);
+            intent.putExtra(EMAIL_IDENTIFIER, authValues.email);
+            intent.putExtra(CITY_IDENTIFIER, authValues.city);
+
+            startActivityForResult(intent, REAUTH_REQUEST);
         } else {
             Intent intent = new Intent(this, AuthActivity.class);
             startActivityForResult(intent, AUTH_REQUEST);
@@ -62,8 +77,27 @@ public class MainActivity extends AppCompatActivity {
                 AuthValues authValues = new AuthValues();
                 authValues.email = data.getStringExtra(EMAIL_IDENTIFIER);
                 authValues.city = data.getStringExtra(CITY_IDENTIFIER);
-                mDBHelper.addServiceVars(authValues);
+                try {
+                    mDBHelper.addServiceVars(authValues);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 // TODO добавь обновление базы сразу после авторизации
+
+                updateButton.setEnabled(true);
+                classroomsButton.setEnabled(true);
+                changeStatusButton.setEnabled(true);
+            }
+        }
+        else if (requestCode == REAUTH_REQUEST) {
+            if (resultCode == REAUTH_REQUEST_ACK) {
+                updateButton.setEnabled(false);
+                classroomsButton.setEnabled(false);
+                changeStatusButton.setEnabled(false);
+
+                mDBHelper.clearDatabase();
             }
         }
     }

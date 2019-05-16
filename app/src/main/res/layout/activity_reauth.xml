@@ -17,10 +17,12 @@
         android:text="Вы авторизованы"/>
 
     <Button
+        android:id="@+id/activity_reauth_button_log_out"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="@string/activity_reauth_button"
+        android:onClick="onClickButtonLogOut"
         android:textSize="30dp" />
 
 </android.support.v7.widget.LinearLayoutCompat>
