@@ -179,8 +179,6 @@ public class AuthActivity extends AppCompatActivity {
                                 initDB.execute();
 
                                 Intent intent = new Intent();
-//                                intent.putExtra(EMAIL_IDENTIFIER, ackAuthValues.email);
-//                                intent.putExtra(CITY_IDENTIFIER, ackAuthValues.city);
                                 setResult(AUTH_RESULT_ACK, intent);
                                 AuthActivity.this.finish();
                             } else

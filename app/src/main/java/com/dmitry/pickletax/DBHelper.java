@@ -2,6 +2,7 @@ package com.dmitry.pickletax;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
@@ -184,8 +185,8 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put("email", authValues.email);
             values.put("city", authValues.city);
             db.insert("service_vars", null, values);
+            db.close();
         }
-        db.close();
     }
 
     public AuthValues getServiceVars() {
@@ -238,6 +239,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 }
                 contentValues.clear();
             }
+
+            db.close();
         }
     }
 
@@ -260,11 +263,80 @@ public class DBHelper extends SQLiteOpenHelper {
             for (String tableName : TABLES_NAMES)
                 db.delete(tableName, null, null);
             db.execSQL("VACUUM");
+            db.close();
         }
     }
 
-    public void getClassrooms(String campus, int status, int lesson_number) {
+    public Classroom[] getClassroomsFromSchedule(String campus, Integer status, Integer lesson_number) {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor cursor = db.rawQuery("SELECT name, type FROM schedule s, classrooms c " +
+                    "WHERE s.classroom_id = c.id AND " +
+                            "c.campus_name = ? AND " +
+                            "s.status = ? AND " +
+                            "s.lesson_number = ?;",
+                    new String[]{campus, status.toString(), lesson_number.toString()});
 
+            Classroom classrooms[] = new Classroom[cursor.getCount()];
+            int i = 0;
+            while (cursor.moveToNext()) {
+                classrooms[i].setName(cursor.getString(0));
+                classrooms[i].setType(cursor.getString(1));
+                i++;
+            }
+
+            db.close();
+            return classrooms;
+        }
+        return null;
+    }
+
+    public String[] getCampuses() {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor cursor = db.rawQuery("SELECT name FROM campuses;", null);
+
+            String campuses[] = new String[cursor.getCount()];
+            int i = 0;
+            while (cursor.moveToNext()) {
+                campuses[i] = cursor.getString(0);
+                i++;
+            }
+
+            db.close();
+            return campuses;
+        }
+        return null;
+    }
+
+    public Integer getMaxLessonNumber() {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor cursor = db.rawQuery("SELECT max_lesson_number FROM service_vars;", null);
+            cursor.moveToFirst();
+            return cursor.getInt(0);
+        }
+        return null;
+    }
+
+    public Classroom[] getClassrooms(String campus) {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null) {
+            Cursor cursor = db.rawQuery("SELECT name, type FROM classrooms WHERE campus_name = " + campus + ";", null);
+
+            Classroom classrooms[] = new Classroom[cursor.getCount()];
+            int i = 0;
+            while (cursor.moveToNext()) {
+                classrooms[i].setName(cursor.getString(0));
+                classrooms[i].setType(cursor.getString(1));
+                classrooms[i].setCampus_name(campus);
+                i++;
+            }
+
+            db.close();
+            return classrooms;
+        }
+        return null;
     }
 
 }

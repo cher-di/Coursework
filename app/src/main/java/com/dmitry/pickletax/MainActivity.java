@@ -1,6 +1,7 @@
 package com.dmitry.pickletax;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -74,15 +75,6 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTH_REQUEST) {
             if (resultCode == AUTH_RESULT_ACK) {
-//                AuthValues authValues = new AuthValues();
-//                authValues.email = data.getStringExtra(EMAIL_IDENTIFIER);
-//                authValues.city = data.getStringExtra(CITY_IDENTIFIER);
-//                try {
-//                    mDBHelper.addServiceVars(authValues);
-//                }
-//                catch (Exception e) {
-//                    e.printStackTrace();
-//                }
 
                 // TODO добавь обновление базы сразу после авторизации
 
@@ -97,7 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 classroomsButton.setEnabled(false);
                 changeStatusButton.setEnabled(false);
 
-                mDBHelper.clearDatabase(); // TODO сделай в отедльном потоке
+                class ClearDatabase extends AsyncTask<Void, Void, Void> {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        mDBHelper.clearDatabase();
+                        return null;
+                    }
+                }
             }
         }
     }
