@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"></Spinner>
 
     <Spinner
-        android:id="@+id/activity_classrooms_spinner_time"
+        android:id="@+id/activity_classrooms_spinner_lesson_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></Spinner>
 
@@ -41,6 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="@string/activity_classrooms_radiobutton_free" />
 
             <RadioButton

@@ -9,30 +9,63 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "main_database";
     public static final int DB_VER = 1;
 
     private static final String CREATE_TABLE_CAMPUSES = "CREATE TABLE campuses (name TEXT PRIMARY KEY NOT NULL);";
+    private static final String CREATE_TABLE_CLASSROOMS_TYPES = "CREATE TABLE classrooms_types (type_name TEXT PRIMARY KEY NOT NULL);";
     private static final String CREATE_TABLE_CLASSROOMS = "CREATE TABLE classrooms " +
             "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-            "name TEXT NOT NULL, campus_name TEXT NOT NULL, " +
+            "name TEXT NOT NULL, " +
+            "campus_name TEXT NOT NULL, " +
             "type TEXT NOT NULL, " +
-            "FOREIGN KEY(campus_name) REFERENCES campuses(name));";
+            "FOREIGN KEY(campus_name) REFERENCES campuses(name), " +
+            "FOREIGN KEY(type) REFERENCES classrooms_type(type_name));";
     private static final String CREATE_TABLE_SCHEDULE = "CREATE TABLE schedule " +
             "(classroom_id INTEGER NOT NULL, " +
-            "lesson_number INTEGER NOT NULL, " +
-            "status INTEGER NOT NULL DEFAULT 0, " +
+            "lesson_number INTEGER NOT NULL CHECK(lesson_number >= 1), " +
+            "status INTEGER NOT NULL DEFAULT 0 CHECK(status IN (0, 1)), " +
             "description TEXT, " +
             "PRIMARY KEY(classroom_id, lesson_number), " +
             "FOREIGN KEY(classroom_id) REFERENCES classrooms(id));";
-    private static final String CREATE_TABLE_SERVICE_VAR = "CREATE TABLE service_var" +
+    private static final String CREATE_TABLE_SERVICE_VARS = "CREATE TABLE service_vars" +
             "(email TEXT NOT NULL, " +
             "city TEXT NOT NULL, " +
+            "max_lesson_number INTEGER NOT NULL, " +
             "youngest_update TEXT, " +
             "oldest_update TEXT, " +
             "PRIMARY KEY(email, city));";
+
+    private static final String TABLES_NAMES[] = {"campuses", "classrooms", "schedule", "service_vars", "classrooms_types"};
+
+    private class InitDBObject {
+        public class Campus {
+            @SerializedName("name")
+            @Expose
+            public String name;
+
+            @SerializedName("classrooms")
+            @Expose
+            public Classroom classrooms[];
+        }
+
+        @SerializedName("campuses")
+        @Expose
+        public Campus campuses[];
+
+        @SerializedName("classrooms_types")
+        @Expose
+        public String classrooms_types[];
+
+        @SerializedName("max_lesson_number")
+        @Expose
+        public Integer max_lesson_number;
+    }
 
     private static final class Factory implements SQLiteDatabase.CursorFactory {
 
@@ -52,10 +85,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_TABLE_CLASSROOMS_TYPES);
         db.execSQL(CREATE_TABLE_CAMPUSES);
         db.execSQL(CREATE_TABLE_CLASSROOMS);
         db.execSQL(CREATE_TABLE_SCHEDULE);
-        db.execSQL(CREATE_TABLE_SERVICE_VAR);
+        db.execSQL(CREATE_TABLE_SERVICE_VARS);
     }
 
     @Override
@@ -90,7 +124,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (db != null) {
             ContentValues values = new ContentValues();
             values.put("name", classroom.getName());
-            values.put("campus_name", classroom.getCampus());
+            values.put("campus_name", classroom.getCampus_name());
             values.put("type", classroom.getType());
             db.insert("campuses", null, values);
             db.close();
@@ -103,7 +137,7 @@ public class DBHelper extends SQLiteOpenHelper {
             for (Classroom classroom : classrooms) {
                 ContentValues values = new ContentValues();
                 values.put("name", classroom.getName());
-                values.put("campus_name", classroom.getCampus());
+                values.put("campus_name", classroom.getCampus_name());
                 values.put("type", classroom.getType());
                 db.insert("campuses", null, values);
             }
@@ -143,15 +177,13 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addServiceVars(AuthValues authValues) throws Exception {
-        if (isAuthorized())
-            throw new Exception("Tried to add new service values, while user is already authorized");
+    public void addServiceVars(AuthValues authValues) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues values = new ContentValues();
             values.put("email", authValues.email);
             values.put("city", authValues.city);
-            db.insert("service_var", null, values);
+            db.insert("service_vars", null, values);
         }
         db.close();
     }
@@ -160,7 +192,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         AuthValues authValues = new AuthValues();
         if (db != null) {
-            Cursor cursor = (Cursor) db.rawQuery("SELECT email, city FROM service_var", null);
+            Cursor cursor = (Cursor) db.rawQuery("SELECT email, city FROM service_vars;", null);
             cursor.moveToFirst();
             authValues.email = cursor.getString(0);
             authValues.city = cursor.getString(1);
@@ -174,10 +206,45 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void initTables(String jsonDB, AuthValues authValues) {
+        addServiceVars(authValues);
+
+        Gson gson = new Gson();
+        InitDBObject initDBObject = gson.fromJson(jsonDB, InitDBObject.class);
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            ContentValues contentValues = new ContentValues();
+
+            contentValues.put("max_lesson_number", initDBObject.max_lesson_number);
+            db.insert("service_vars", null, contentValues);
+            contentValues.clear();
+
+            for (String classroom_type : initDBObject.classrooms_types) {
+                contentValues.put("type_name", classroom_type);
+                db.insert("classrooms_types", null, contentValues);
+            }
+            contentValues.clear();
+
+            for (InitDBObject.Campus campus : initDBObject.campuses) {
+                contentValues.put("name", campus.name);
+                db.insert("campuses", null, contentValues);
+                contentValues.clear();
+
+                contentValues.put("campus_name", campus.name);
+                for (Classroom classroom : campus.classrooms) {
+                    contentValues.put("name", classroom.getName());
+                    contentValues.put("type", classroom.getType());
+                    db.insert("classrooms", null, contentValues);
+                }
+                contentValues.clear();
+            }
+        }
+    }
+
     public boolean isAuthorized() {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
-            Cursor cursor = (Cursor) db.rawQuery("SELECT COUNT(*) FROM service_var", null);
+            Cursor cursor = (Cursor) db.rawQuery("SELECT COUNT(*) FROM service_vars;", null);
             cursor.moveToFirst();
             int num = cursor.getInt(0);
             cursor.close();
@@ -188,6 +255,15 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void clearDatabase() {
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            for (String tableName : TABLES_NAMES)
+                db.delete(tableName, null, null);
+            db.execSQL("VACUUM");
+        }
+    }
+
+    public void getClassrooms(String campus, int status, int lesson_number) {
 
     }
 

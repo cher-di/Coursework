@@ -15,6 +15,10 @@ public interface Constants {
     public static final Integer AUTH_CODE_ACK = 251;
     public static final Integer AUTH_CODE_FAIL = 451;
 
+    // эти константы нельзя менять, т.к. они жестко зашиты в базе данных
+    public static final Integer CLASSROOM_FREE = 0;
+    public static final Integer CLASSROOM_BUSY = 1;
+
     public static final String EMAIL_IDENTIFIER = "com.dmitry.pickletax.email_edintifier";
     public static final String CITY_IDENTIFIER = "com.dmitry.pickletax.city_identifier";
 

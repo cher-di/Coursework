@@ -1,13 +1,24 @@
 package com.dmitry.pickletax;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Classroom {
+    @SerializedName("name")
+    @Expose
     private String name;
-    private String campus;
+
+    @SerializedName("campus_name")
+    @Expose
+    private String campus_name;
+
+    @SerializedName("type")
+    @Expose
     private String type;
 
-    Classroom(String name, String campus, String type) {
+    Classroom(String name, String campus_name, String type) {
         this.name = name;
-        this.campus = campus;
+        this.campus_name = campus_name;
         this.type = type;
     }
 
@@ -19,12 +30,12 @@ public class Classroom {
         return name;
     }
 
-    public void setCampus(String campus) {
-        this.campus = campus;
+    public void setCampus_name(String campus_name) {
+        this.campus_name = campus_name;
     }
 
-    public String getCampus() {
-        return campus;
+    public String getCampus_name() {
+        return campus_name;
     }
 
     public void setType(String type) {
