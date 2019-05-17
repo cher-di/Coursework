@@ -77,7 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addCampuses(String campusNames[]) {
+    public void addCampuses(String[] campusNames) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             for (String campusName : campusNames) {
@@ -101,7 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addClassrooms(Classroom classrooms[]) {
+    public void addClassrooms(Classroom[] classrooms) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             for (Classroom classroom : classrooms) {
@@ -130,7 +130,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addScheduleItems(ScheduleItem scheduleItems[]) {
+    public void addScheduleItems(ScheduleItem[] scheduleItems) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             for (ScheduleItem scheduleItem : scheduleItems) {
@@ -269,7 +269,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT name FROM campuses;", null);
 
-            String campuses[] = new String[cursor.getCount()];
+            String[] campuses = new String[cursor.getCount()];
             int i = 0;
             while (cursor.moveToNext()) {
                 campuses[i] = cursor.getString(0);
@@ -297,7 +297,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT name, type FROM classrooms WHERE campus_name = " + campus + ";", null);
 
-            Classroom classrooms[] = new Classroom[cursor.getCount()];
+            Classroom[] classrooms = new Classroom[cursor.getCount()];
             int i = 0;
             while (cursor.moveToNext()) {
                 classrooms[i].setName(cursor.getString(0));
