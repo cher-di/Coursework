@@ -38,7 +38,6 @@ public class AuthActivity extends AppCompatActivity {
     private AuthValues ackAuthValues;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,8 +154,7 @@ public class AuthActivity extends AppCompatActivity {
                                 String jsonDB = null;
                                 try {
                                     jsonDB = response.body().string();
-                                }
-                                catch (IOException e) {
+                                } catch (IOException e) {
                                     e.printStackTrace();
                                 }
 
