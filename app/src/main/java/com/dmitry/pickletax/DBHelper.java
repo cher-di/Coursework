@@ -208,9 +208,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.clear();
             }
 
-            for (Integer lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; ) {
+            for (int lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; ) {
                 db.execSQL("INSERT INTO schedule SELECT id, ?, ?, NULL FROM classrooms;",
-                        new String[]{lesson_number.toString(), Integer.toString(CLASSROOM_FREE)});
+                        new String[]{Integer.toString(lesson_number), Integer.toString(CLASSROOM_FREE)});
             }
 
             db.close();
@@ -240,7 +240,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Classroom[] getClassroomsForShow(String campus, Integer status, Integer lesson_number) {
+    public Classroom[] getClassroomsForShow(String campus, int status, int lesson_number) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT c.name, c.type FROM schedule s, classrooms c " +
@@ -248,7 +248,7 @@ public class DBHelper extends SQLiteOpenHelper {
                             "c.campus_name = ? AND " +
                             "s.status = ? AND " +
                             "s.lesson_number = ?;",
-                    new String[]{campus, status.toString(), lesson_number.toString()});
+                    new String[]{campus, Integer.toString(status), Integer.toString(lesson_number)});
 
             Classroom classrooms[] = new Classroom[cursor.getCount()];
             int i = 0;
@@ -282,14 +282,14 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public Integer getMaxLessonNumber() {
+    public int getMaxLessonNumber() {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT max_lesson_number FROM service_vars;", null);
             cursor.moveToFirst();
             return cursor.getInt(0);
         }
-        return null;
+        return 0;
     }
 
     public Classroom[] getClassroomsForSpinner(String campus) {
@@ -312,7 +312,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public ScheduleItem getScheduleItemForChangeStatus(String campus, String name, Integer lesson_number) {
+    public ScheduleItem getScheduleItemForChangeStatus(String campus, String name, int lesson_number) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT c.id, s.status, s.description FROM schedule s, classrooms c " +
@@ -320,7 +320,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     "c.campus_name = ? AND " +
                     "c.name = ? AND " +
                     "s.lesson_number = ?;",
-                    new String[]{campus, name, lesson_number.toString()});
+                    new String[]{campus, name, Integer.toString(lesson_number)});
 
             cursor.moveToFirst();
             int id = cursor.getInt(0);
@@ -349,7 +349,7 @@ public class DBHelper extends SQLiteOpenHelper {
         public String classrooms_types[];
         @SerializedName("max_lesson_number")
         @Expose
-        public Integer max_lesson_number;
+        public int max_lesson_number;
 
         public class Campus {
             @SerializedName("name")

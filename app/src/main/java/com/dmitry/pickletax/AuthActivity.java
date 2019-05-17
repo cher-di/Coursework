@@ -92,7 +92,7 @@ public class AuthActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, final Response response) throws IOException {
                     AuthActivity.this.runOnUiThread(new Runnable() {
-                        final Integer responseCode = response.code();
+                        final int responseCode = response.code();
 
                         @Override
                         public void run() {
@@ -106,7 +106,7 @@ public class AuthActivity extends AppCompatActivity {
 
                                 Toast.makeText(AuthActivity.this, "Сообщение с кодом отправлено на указанный адрес", Toast.LENGTH_SHORT).show();
                             } else
-                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -145,7 +145,7 @@ public class AuthActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, final Response response) throws IOException {
                     AuthActivity.this.runOnUiThread(new Runnable() {
-                        final Integer responseCode = response.code();
+                        final int responseCode = response.code();
 
                         @Override
                         public void run() {
@@ -182,7 +182,7 @@ public class AuthActivity extends AppCompatActivity {
                                 setResult(AUTH_RESULT_ACK, intent);
                                 AuthActivity.this.finish();
                             } else
-                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + responseCode.toString(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
 
                         }
                     });
