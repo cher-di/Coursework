@@ -7,23 +7,23 @@
     android:orientation="vertical"
     tools:context=".ChangeStatusActivity">
 
-    <Spinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/activity_change_status_spinner_campus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"></Spinner>
+        android:layout_weight="0"></android.support.v7.widget.AppCompatSpinner>
 
-    <Spinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/activity_change_status_spinner_classroom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"></Spinner>
+        android:layout_weight="0"></android.support.v7.widget.AppCompatSpinner>
 
-    <Spinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/activity_change_status_spinner_lesson_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"></Spinner>
+        android:layout_weight="0"></android.support.v7.widget.AppCompatSpinner>
 
     <TextView
         android:id="@+id/activity_change_status_textview_status"
