@@ -28,6 +28,7 @@ import static com.dmitry.pickletax.Constants.CONNECT_TIMEOUT;
 import static com.dmitry.pickletax.Constants.JSON;
 import static com.dmitry.pickletax.Constants.AUTH_VALIDATION_ACK;
 import static com.dmitry.pickletax.Constants.AUTH_VALIDATION_FAIL;
+import static com.dmitry.pickletax.Constants.SERVER_ERROR;
 
 public class AuthActivity extends AppCompatActivity {
     private EditText editCity;
@@ -108,6 +109,8 @@ public class AuthActivity extends AppCompatActivity {
                                 ackAuthValues = authValues;
 
                                 Toast.makeText(AuthActivity.this, "Сообщение с кодом отправлено на указанный адрес", Toast.LENGTH_SHORT).show();
+                            } else if (responseCode == SERVER_ERROR) {
+                                Toast.makeText(AuthActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
                             } else
                                 Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
 
@@ -124,7 +127,7 @@ public class AuthActivity extends AppCompatActivity {
         if (code.isEmpty())
             Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT).show();
         else {
-            final String json = "{'code' : '" + code + "'}";
+            final String json = "{'verification_code' : '" + code + "'}";
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                     .build();
@@ -185,6 +188,8 @@ public class AuthActivity extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 setResult(AUTH_RESULT_ACK, intent);
                                 AuthActivity.this.finish();
+                            } else if (responseCode == SERVER_ERROR) {
+                                Toast.makeText(AuthActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
                             } else
                                 Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
 

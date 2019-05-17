@@ -14,6 +14,7 @@ public interface Constants {
     public static final int AUTH_VALIDATION_FAIL = 450;
     public static final int AUTH_CODE_ACK = 251;
     public static final int AUTH_CODE_FAIL = 451;
+    public static final int SERVER_ERROR = 550;
 
     public static int CONNECT_TIMEOUT = 5;
 
