@@ -15,6 +15,8 @@ public interface Constants {
     public static final int AUTH_CODE_ACK = 251;
     public static final int AUTH_CODE_FAIL = 451;
 
+    public static int CONNECT_TIMEOUT = 5;
+
     // эти константы нельзя менять, т.к. они жестко зашиты в базе данных
     public static final int CLASSROOM_FREE = 0;
     public static final int CLASSROOM_BUSY = 1;

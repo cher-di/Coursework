@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,6 +24,7 @@ import okhttp3.Response;
 import static com.dmitry.pickletax.Constants.AUTH_RESULT_ACK;
 import static com.dmitry.pickletax.Constants.AUTH_CODE_ACK;
 import static com.dmitry.pickletax.Constants.AUTH_CODE_FAIL;
+import static com.dmitry.pickletax.Constants.CONNECT_TIMEOUT;
 import static com.dmitry.pickletax.Constants.JSON;
 import static com.dmitry.pickletax.Constants.AUTH_VALIDATION_ACK;
 import static com.dmitry.pickletax.Constants.AUTH_VALIDATION_FAIL;
@@ -68,7 +70,9 @@ public class AuthActivity extends AppCompatActivity {
             Gson gson = new Gson();
             String json = gson.toJson(authValues);
 
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                    .build();
 
             RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
@@ -121,7 +125,9 @@ public class AuthActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT).show();
         else {
             final String json = "{'code' : '" + code + "'}";
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                    .build();
 
             RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
