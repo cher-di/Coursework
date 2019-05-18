@@ -10,16 +10,16 @@
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/activity_classrooms_spinner_campus"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.AppCompatSpinner>
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/activity_classrooms_spinner_lesson_number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v7.widget.AppCompatSpinner>
+        android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
@@ -27,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onClickButtonSearch"
             android:text="@string/activity_classrooms_button_search" />
 
         <RadioGroup
@@ -51,13 +52,34 @@
                 android:layout_weight="1"
                 android:text="@string/activity_classrooms_radiobutton_busy" />
         </RadioGroup>
-    </LinearLayout>
+    </android.support.v7.widget.LinearLayoutCompat>
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Номер"
+            android:textSize="22dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Тип"
+            android:textSize="22dp" />
+
+    </android.support.v7.widget.LinearLayoutCompat>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/activity_classrooms_recyclerview_classrooms"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"></android.support.v7.widget.RecyclerView>
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
 </android.support.v7.widget.LinearLayoutCompat>

@@ -147,12 +147,13 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addServiceVars(AuthValues authValues) {
+    public void addServiceVars(AuthValues authValues, int max_lesson_number) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues values = new ContentValues();
             values.put("email", authValues.email);
             values.put("city", authValues.city);
+            values.put("max_lesson_number", max_lesson_number);
             db.insert("service_vars", null, values);
             db.close();
         }
@@ -176,17 +177,12 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void initTables(String jsonDB, AuthValues authValues) {
-        addServiceVars(authValues);
-
         Gson gson = new Gson();
         InitDBObject initDBObject = gson.fromJson(jsonDB, InitDBObject.class);
+        addServiceVars(authValues, initDBObject.max_lesson_number);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues contentValues = new ContentValues();
-
-            contentValues.put("max_lesson_number", initDBObject.max_lesson_number);
-            db.insert("service_vars", null, contentValues);
-            contentValues.clear();
 
             for (String classroom_type : initDBObject.classrooms_types) {
                 contentValues.put("type_name", classroom_type);
@@ -208,7 +204,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.clear();
             }
 
-            for (int lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; ) {
+            for (int lesson_number = 1; lesson_number <= initDBObject.max_lesson_number; lesson_number++) {
                 db.execSQL("INSERT INTO schedule SELECT id, ?, ?, NULL FROM classrooms;",
                         new String[]{Integer.toString(lesson_number), Integer.toString(CLASSROOM_FREE)});
             }
@@ -250,11 +246,11 @@ public class DBHelper extends SQLiteOpenHelper {
                             "s.lesson_number = ?;",
                     new String[]{campus, Integer.toString(status), Integer.toString(lesson_number)});
 
-            Classroom classrooms[] = new Classroom[cursor.getCount()];
+            int itemCount = cursor.getCount();
+            Classroom[] classrooms = new Classroom[cursor.getCount()];
             int i = 0;
             while (cursor.moveToNext()) {
-                classrooms[i].setName(cursor.getString(0));
-                classrooms[i].setType(cursor.getString(1));
+                classrooms[i] = new Classroom(cursor.getString(0), campus, cursor.getString(1));
                 i++;
             }
 
@@ -358,7 +354,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
             @SerializedName("classrooms")
             @Expose
-            public Classroom classrooms[];
+              public Classroom classrooms[];
         }
     }
 

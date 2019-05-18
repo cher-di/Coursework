@@ -32,7 +32,7 @@
     <!--url-->
     <string name="url_update"></string>
     <string name="url_change_status"></string>
-    <string name="url_auth">http://ec2-18-225-6-37.us-east-2.compute.amazonaws.com:9090/pickletax/databasedaemon/authorization/</string>
+    <string name="url_auth">http://ec2-18-225-6-37.us-east-2.compute.amazonaws.com:8001/pickletax/databasedaemon/authorization/</string>
 
     <!--service messages-->
     <string name="server_error">Ошибка сервера</string>

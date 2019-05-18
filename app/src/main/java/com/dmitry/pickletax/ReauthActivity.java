@@ -28,5 +28,6 @@ public class ReauthActivity extends AppCompatActivity {
 
     public void onClickButtonLogOut(View view) {
         setResult(REAUTH_REQUEST_ACK, new Intent());
+        this.finish();
     }
 }

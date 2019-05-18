@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                         return null;
                     }
                 }
+                ClearDatabase clearDatabase = new ClearDatabase();
+                clearDatabase.execute();
             }
         }
     }

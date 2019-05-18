@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +41,22 @@ public class AuthActivity extends AppCompatActivity {
     private String emailValidationRegex = ".+@.+\\..+";
 
     private AuthValues ackAuthValues;
+
+    private class VerificationValues {
+        @SerializedName("email")
+        @Expose
+        String email;
+
+        @SerializedName("verification_code")
+        @Expose
+        String verification_code;
+
+
+        public VerificationValues(String email, String verification_code) {
+            this.email = email;
+            this.verification_code = verification_code;
+        }
+    }
 
 
     @Override
@@ -127,7 +145,10 @@ public class AuthActivity extends AppCompatActivity {
         if (code.isEmpty())
             Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT).show();
         else {
-            final String json = "{'verification_code' : '" + code + "'}";
+            VerificationValues verificationValues = new VerificationValues(ackAuthValues.email, code);
+            Gson gson = new Gson();
+            String json = gson.toJson(verificationValues);
+
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                     .build();

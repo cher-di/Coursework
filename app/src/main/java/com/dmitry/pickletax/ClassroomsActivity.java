@@ -41,36 +41,46 @@ public class ClassroomsActivity extends AppCompatActivity {
         campusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         campusSpinner.setAdapter(campusSpinnerAdapter);
 
-        campusSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        campusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 classroomsForRecyclerView.clear();
                 recyclerAdapterClassrooms.notifyDataSetChanged();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                campusSpinner.setSelection(0); // TODO может сломаться
+            }
         });
 
-        campusSpinner.setSelection(0); // TODO может сломаться
+        // campusSpinner.setSelection(0); // TODO может сломаться
 
         // lessonNumberSpinner
         lessonNumberSpinner = (Spinner) findViewById(R.id.activity_classrooms_spinner_lesson_number);
         int maxLessonNumber = mDBHelper.getMaxLessonNumber();
         String[] lessonNumberForSpinner = new String[maxLessonNumber];
-        for (Integer i = 1; i <= maxLessonNumber; i++)
-            lessonNumberForSpinner[i] = "Занятие №" + i.toString();
+        for (int i = 0; i < maxLessonNumber; i++)
+            lessonNumberForSpinner[i] = "Занятие №" + Integer.toString(i + 1);
         ArrayAdapter<String> lessonNumberSpinnerAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, lessonNumberForSpinner);
         lessonNumberSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lessonNumberSpinner.setAdapter(lessonNumberSpinnerAdapter);
 
-        lessonNumberSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lessonNumberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 classroomsForRecyclerView.clear();
                 recyclerAdapterClassrooms.notifyDataSetChanged();
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                lessonNumberSpinner.setSelection(0); // TODO может сломаться
+            }
         });
 
-        lessonNumberSpinner.setSelection(0); // TODO может сломаться
+        // lessonNumberSpinner.setSelection(0); // TODO может сломаться
 
         // classroomsRecyclerView
         RecyclerView classroomsRecyclerView = (RecyclerView) findViewById(R.id.activity_classrooms_recyclerview_classrooms);
