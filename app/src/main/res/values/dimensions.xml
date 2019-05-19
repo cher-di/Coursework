@@ -6,4 +6,7 @@
     <!--activity_auth-->
     <dimen name="activity_auth_button_textsize">16dp</dimen>
     <dimen name="activity_auth_edittext_textsize">18dp</dimen>
+
+    <!--spinners-->
+    <dimen name="spinner_height">50dp</dimen>
 </resources>

@@ -115,6 +115,6 @@ public class ClassroomsActivity extends AppCompatActivity {
         recyclerAdapterClassrooms.notifyDataSetChanged();
 
         if (classrooms.length == 0)
-            Toast.makeText(this, "Ничего не найдено", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "Ничего не найдено", Toast.LENGTH_SHORT).show();
     }
 }

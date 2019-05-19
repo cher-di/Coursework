@@ -22,8 +22,10 @@ public class ReauthActivity extends AppCompatActivity {
         authValues.email = intent.getStringExtra(EMAIL_IDENTIFIER);
         authValues.city = intent.getStringExtra(CITY_IDENTIFIER);
 
-        TextView textView = (TextView) findViewById(R.id.activity_reauth_textview);
-        textView.setText("Вы авторизованы как:\n" + authValues.email + "\nГород:\n" + authValues.city);
+        TextView emailTextView = (TextView) findViewById(R.id.activity_reauth_textview_email);
+        emailTextView.setText("Вы авторизованы как:\n" + authValues.email );
+        TextView cityTextView = (TextView)findViewById(R.id.activity_reauth_textview_city);
+        cityTextView.setText("Город:\n" + authValues.city);
     }
 
     public void onClickButtonLogOut(View view) {

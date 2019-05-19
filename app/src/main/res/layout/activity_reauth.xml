@@ -8,21 +8,30 @@
     tools:context=".ReauthActivity">
 
     <TextView
-        android:id="@+id/activity_reauth_textview"
+        android:id="@+id/activity_reauth_textview_email"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="30dp"
-        android:text="Вы авторизованы"/>
+        android:text="Вы авторизованы как:"
+        android:textSize="25dp" />
+
+    <TextView
+        android:id="@+id/activity_reauth_textview_city"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Город:"
+        android:textSize="25dp" />
 
     <Button
         android:id="@+id/activity_reauth_button_log_out"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="@string/activity_reauth_button"
         android:onClick="onClickButtonLogOut"
-        android:textSize="30dp" />
+        android:text="@string/activity_reauth_button"
+        android:textSize="25dp" />
 
 </android.support.v7.widget.LinearLayoutCompat>

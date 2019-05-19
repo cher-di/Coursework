@@ -242,6 +242,11 @@ public class ChangeStatusActivity extends AppCompatActivity {
     }
 
     public void OnClickButtonChangeStatus(View view) {
+        if (classroomsForSpinner.length == 0) {
+            Toast.makeText(this, "Нет аудиторий", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String email = mDBHelper.getServiceVars().email;
         String campus_name = campusSpinner.getSelectedItem().toString();
         String classroom_name = classroomSpinner.getSelectedItem().toString();
