@@ -148,39 +148,45 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void addServiceVars(AuthValues authValues, int max_lesson_number) {
+    public void addServiceVars(ServiceValues serviceValues, int max_lesson_number) {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues values = new ContentValues();
-            values.put("email", authValues.email);
-            values.put("city", authValues.city);
+            values.put("email", serviceValues.getEmail());
+            values.put("city", serviceValues.getCity());
             values.put("max_lesson_number", max_lesson_number);
             db.insert("service_vars", null, values);
             db.close();
         }
     }
 
-    public AuthValues getServiceVars() {
+    public ServiceValues getServiceVars() {
         SQLiteDatabase db = getReadableDatabase();
-        AuthValues authValues = new AuthValues();
+        ServiceValues serviceValues = new ServiceValues();
         if (db != null) {
-            Cursor cursor = (Cursor) db.rawQuery("SELECT email, city FROM service_vars;", null);
+            Cursor cursor = (Cursor) db.rawQuery("SELECT * FROM service_vars;", null);
             cursor.moveToFirst();
-            authValues.email = cursor.getString(0);
-            authValues.city = cursor.getString(1);
+            serviceValues.setEmail(cursor.getString(0));
+            serviceValues.setCity(cursor.getString(1));
+            serviceValues.setMax_lesson_number(cursor.getInt(2));
+            if (!cursor.isNull(3))
+                serviceValues.setYoungest_update(cursor.getString(3));
+            if (!cursor.isNull(4))
+                serviceValues.setOldest_update(cursor.getString(4));
+
             db.close();
-            return authValues;
+            return serviceValues;
         } else {
-            authValues.email = "email";
-            authValues.email = "city";
-            return authValues;
+            serviceValues.setEmail("email");
+            serviceValues.setCity("city");
+            return serviceValues;
         }
     }
 
-    public void initTables(String jsonDB, AuthValues authValues) {
+    public void initTables(String jsonDB, ServiceValues serviceValues) {
         Gson gson = new Gson();
         InitDBObject initDBObject = gson.fromJson(jsonDB, InitDBObject.class);
-        addServiceVars(authValues, initDBObject.max_lesson_number);
+        addServiceVars(serviceValues, initDBObject.max_lesson_number);
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             ContentValues contentValues = new ContentValues();
@@ -311,10 +317,10 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT c.id, s.status, s.description FROM schedule s, classrooms c " +
-                    "WHERE c.id = s.classroom_id AND " +
-                    "c.campus_name = ? AND " +
-                    "c.name = ? AND " +
-                    "s.lesson_number = ?;",
+                            "WHERE c.id = s.classroom_id AND " +
+                            "c.campus_name = ? AND " +
+                            "c.name = ? AND " +
+                            "s.lesson_number = ?;",
                     new String[]{campus, classroom_name, Integer.toString(lesson_number)});
 
             cursor.moveToFirst();
@@ -328,15 +334,45 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void updateClassroomStatus(String campus_name, String classroom_name, int lesson_number, int new_status, String new_description) {
-        new_description = new_description == NULL_DESCRIPTION ? "NULL" : new_description;
+        new_description = new_description == NULL_DESCRIPTION || new_description.isEmpty() ? "NULL" : new_description;
         SQLiteDatabase db = getWritableDatabase();
         if (db != null) {
             db.execSQL("UPDATE schedule SET " +
-                    "status = ?, " +
-                    "description = ? " +
-                    "WHERE classroom_id = (SELECT id FROM classrooms WHERE campus_name = ? AND name = ?) AND " +
-                    "lesson_number = ?;",
+                            "status = ?, " +
+                            "description = ? " +
+                            "WHERE classroom_id = (SELECT id FROM classrooms WHERE campus_name = ? AND name = ?) AND " +
+                            "lesson_number = ?;",
                     new String[]{Integer.toString(new_status), new_description, campus_name, classroom_name, Integer.toString(lesson_number)});
+            db.close();
+        }
+    }
+
+    public void updateDatabase(String jsonUpdate) {
+        Gson gson = new Gson();
+        UpdateDBObject updateDBObject = gson.fromJson(jsonUpdate, UpdateDBObject.class);
+
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE schedule SET status = 0, description = NULL;");
+
+            for (UpdateDBObject.Campus campus : updateDBObject.campuses) {
+                String campus_name = campus.name;
+                for (UpdateDBObject.Campus.ClassroomInSchedule classroomInSchedule : campus.classrooms_in_schedule) {
+                    String classroom_name = classroomInSchedule.name;
+                    for (UpdateDBObject.Campus.ClassroomInSchedule.Lesson lesson : classroomInSchedule.lessons) {
+                        String description = lesson.lesson_description == NULL_DESCRIPTION || lesson.lesson_description.isEmpty()
+                                ? "NULL" : lesson.lesson_description;
+
+                        db.execSQL("UPDATE schedule SET " +
+                                        "status = 1, " +
+                                        "description = ? " +
+                                        "WHERE classroom_id = (SELECT id FROM classrooms WHERE campus_name = ? AND name = ?) AND " +
+                                        "lesson_number = ?;",
+                                new String[]{description, campus_name, classroom_name, Integer.toString(lesson.lesson_number)});
+                    }
+                }
+            }
+
             db.close();
         }
     }
@@ -367,8 +403,43 @@ public class DBHelper extends SQLiteOpenHelper {
 
             @SerializedName("classrooms")
             @Expose
-              public Classroom classrooms[];
+            public Classroom classrooms[];
         }
     }
 
+    private class UpdateDBObject {
+        @SerializedName("campuses")
+        @Expose
+        public Campus campuses[];
+
+        public class Campus {
+            @SerializedName("name")
+            @Expose
+            public String name;
+
+            @SerializedName("classrooms_in_schedule")
+            @Expose
+            public ClassroomInSchedule[] classrooms_in_schedule;
+
+            public class ClassroomInSchedule {
+                @SerializedName("name")
+                @Expose
+                public String name;
+
+                @SerializedName("lessons")
+                @Expose
+                public Lesson[] lessons;
+
+                public class Lesson {
+                    @SerializedName("lesson_number")
+                    @Expose
+                    public int lesson_number;
+
+                    @SerializedName("lesson_description")
+                    @Expose
+                    public String lesson_description;
+                }
+            }
+        }
+    }
 }

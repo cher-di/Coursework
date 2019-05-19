@@ -51,11 +51,11 @@ public class ClassroomsActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                campusSpinner.setSelection(0); // TODO может сломаться
+                campusSpinner.setSelection(0);
             }
         });
 
-        // campusSpinner.setSelection(0); // TODO может сломаться
+        // campusSpinner.setSelection(0);
 
         // lessonNumberSpinner
         lessonNumberSpinner = (Spinner) findViewById(R.id.activity_classrooms_spinner_lesson_number);
@@ -77,11 +77,11 @@ public class ClassroomsActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                lessonNumberSpinner.setSelection(0); // TODO может сломаться
+                lessonNumberSpinner.setSelection(0);
             }
         });
 
-        // lessonNumberSpinner.setSelection(0); // TODO может сломаться
+        // lessonNumberSpinner.setSelection(0);
 
         // classroomsRecyclerView
         RecyclerView classroomsRecyclerView = (RecyclerView) findViewById(R.id.activity_classrooms_recyclerview_classrooms);

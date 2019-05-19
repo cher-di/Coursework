@@ -37,10 +37,11 @@ public class AuthActivity extends AppCompatActivity {
     private EditText editEmail;
     private EditText editCode;
     private Button ackAuthButton;
+    private Button getCodeButton;
     private DBHelper mDBHelper;
     private String emailValidationRegex = ".+@.+\\..+";
 
-    private AuthValues ackAuthValues;
+    private ServiceValues ackServiceValues;
 
     private class VerificationValues {
         @SerializedName("email")
@@ -68,6 +69,7 @@ public class AuthActivity extends AppCompatActivity {
         editEmail = (EditText) findViewById(R.id.activity_auth_edittext_email);
         editCode = (EditText) findViewById(R.id.activity_auth_edittext_code);
         editCode.setEnabled(false);
+        getCodeButton = (Button) findViewById(R.id.activity_auth_button_getcode);
         ackAuthButton = (Button) findViewById(R.id.activity_auth_button_ackauth);
         ackAuthButton.setEnabled(false);
 
@@ -82,12 +84,17 @@ public class AuthActivity extends AppCompatActivity {
         else if (!editEmail.getText().toString().matches(emailValidationRegex))
             Toast.makeText(this, getString(R.string.activity_auth_nonvalid_email), Toast.LENGTH_SHORT).show();
         else {
-            final AuthValues authValues = new AuthValues();
-            authValues.city = editCity.getText().toString();
-            authValues.email = editEmail.getText().toString();
+            editEmail.setEnabled(false);
+            editCity.setEnabled(false);
+            getCodeButton.setEnabled(false);
+
+
+            final ServiceValues serviceValues = new ServiceValues();
+            serviceValues.setCity(editCity.getText().toString());
+            serviceValues.setEmail(editEmail.getText().toString());
 
             Gson gson = new Gson();
-            String json = gson.toJson(authValues);
+            String json = gson.toJson(serviceValues);
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
@@ -106,6 +113,10 @@ public class AuthActivity extends AppCompatActivity {
                     AuthActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            editEmail.setEnabled(true);
+                            editCity.setEnabled(true);
+                            getCodeButton.setEnabled(true);
+
                             Toast.makeText(AuthActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -119,19 +130,31 @@ public class AuthActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (responseCode == AUTH_VALIDATION_FAIL) {
+                                editEmail.setEnabled(true);
+                                editCity.setEnabled(true);
+                                getCodeButton.setEnabled(true);
+
                                 Toast.makeText(AuthActivity.this, "Невалидный город или Email", Toast.LENGTH_SHORT).show();
+
                             } else if (responseCode == AUTH_VALIDATION_ACK) {
                                 editCode.setEnabled(true);
                                 ackAuthButton.setEnabled(true);
 
-                                ackAuthValues = authValues;
+                                ackServiceValues = serviceValues;
 
                                 Toast.makeText(AuthActivity.this, "Сообщение с кодом отправлено на указанный адрес", Toast.LENGTH_SHORT).show();
                             } else if (responseCode == SERVER_ERROR) {
                                 Toast.makeText(AuthActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
-                            } else
-                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                                editEmail.setEnabled(true);
+                                editCity.setEnabled(true);
+                                getCodeButton.setEnabled(true);
+                            } else {
+                                editEmail.setEnabled(true);
+                                editCity.setEnabled(true);
+                                getCodeButton.setEnabled(true);
 
+                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }
@@ -145,9 +168,12 @@ public class AuthActivity extends AppCompatActivity {
         if (code.isEmpty())
             Toast.makeText(this, getString(R.string.activity_auth_edittext_entercode), Toast.LENGTH_SHORT).show();
         else {
-            VerificationValues verificationValues = new VerificationValues(ackAuthValues.email, code);
+            editCode.setEnabled(false);
+            ackAuthButton.setEnabled(false);
+
+            VerificationValues verificationValues = new VerificationValues(ackServiceValues.getEmail(), code);
             Gson gson = new Gson();
-            String json = gson.toJson(verificationValues);
+            final String json = gson.toJson(verificationValues);
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
@@ -166,6 +192,10 @@ public class AuthActivity extends AppCompatActivity {
                     AuthActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            editEmail.setEnabled(true);
+                            editCity.setEnabled(true);
+                            getCodeButton.setEnabled(true);
+
                             Toast.makeText(AuthActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -175,24 +205,22 @@ public class AuthActivity extends AppCompatActivity {
                 public void onResponse(Call call, final Response response) throws IOException {
                     AuthActivity.this.runOnUiThread(new Runnable() {
                         final int responseCode = response.code();
+                        final String responseBody = response.body().string();
 
                         @Override
                         public void run() {
-                            if (responseCode == AUTH_CODE_FAIL)
-                                Toast.makeText(AuthActivity.this, "Неверный код авторизации", Toast.LENGTH_SHORT).show();
-                            else if (responseCode == AUTH_CODE_ACK) {
-                                String jsonDB = null;
-                                try {
-                                    jsonDB = response.body().string();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                            if (responseCode == AUTH_CODE_FAIL) {
+                                editCode.setEnabled(true);
+                                ackAuthButton.setEnabled(true);
 
+                                Toast.makeText(AuthActivity.this, "Неверный код авторизации", Toast.LENGTH_SHORT).show();
+                            }
+                            else if (responseCode == AUTH_CODE_ACK) {
                                 class InitDB extends AsyncTask<String, Void, Void> {
                                     private String jsonDB;
-                                    private AuthValues authValues;
+                                    private ServiceValues authValues;
 
-                                    InitDB(String jsonDB, AuthValues authValues) {
+                                    InitDB(String jsonDB, ServiceValues authValues) {
                                         this.jsonDB = jsonDB;
                                         this.authValues = authValues;
                                     }
@@ -202,18 +230,31 @@ public class AuthActivity extends AppCompatActivity {
                                         mDBHelper.initTables(jsonDB, authValues);
                                         return null;
                                     }
-                                }
-                                InitDB initDB = new InitDB(jsonDB, ackAuthValues);
-                                initDB.execute();
 
-                                Intent intent = new Intent();
-                                setResult(AUTH_RESULT_ACK, intent);
-                                AuthActivity.this.finish();
+                                    @Override
+                                    protected void onPostExecute(Void aVoid) {
+                                        super.onPostExecute(aVoid);
+                                        Intent intent = new Intent();
+                                        setResult(AUTH_RESULT_ACK, intent);
+                                        AuthActivity.this.finish();
+                                    }
+                                }
+                                Toast.makeText(AuthActivity.this, "Загрузка базы данных...", Toast.LENGTH_SHORT).show();
+                                InitDB initDB = new InitDB(responseBody, ackServiceValues);
+                                initDB.execute();
+                                // mDBHelper.initTables(responseBody, ackServiceValues);
+
+//                                Intent intent = new Intent();
+//                                setResult(AUTH_RESULT_ACK, intent);
+//                                AuthActivity.this.finish();
                             } else if (responseCode == SERVER_ERROR) {
                                 Toast.makeText(AuthActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
-                            } else
-                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                            } else {
+                                editCode.setEnabled(true);
+                                ackAuthButton.setEnabled(true);
 
+                                Toast.makeText(AuthActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
                 }

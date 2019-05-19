@@ -136,7 +136,7 @@ public class ChangeStatusActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, campusForSpinner);
         campusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         campusSpinner.setAdapter(campusSpinnerAdapter);
-        campusSpinner.setSelection(0); // TODO может сломаться
+        campusSpinner.setSelection(0);
 
         String campus = campusSpinnerAdapter.getItem(0).toString();
         classroomsForSpinner = mDBHelper.getClassroomsForSpinner(campus);
@@ -168,29 +168,12 @@ public class ChangeStatusActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, classroomsNames);
         classroomSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         classroomSpinner.setAdapter(classroomSpinnerAdapter);
-        classroomSpinner.setSelection(0); // TODO может сломаться
+        classroomSpinner.setSelection(0);
 
         classroomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String campus = campusSpinner.getSelectedItem().toString();
-                String classroom_name = classroomSpinner.getSelectedItem().toString();
-                int lesson_number = lessonNumberSpinner.getSelectedItemPosition() + 1;
-                ScheduleItem currScheduleItem = mDBHelper.getScheduleItemForChangeStatus(campus, classroom_name, lesson_number);
-
-                statusTextView.setText(currScheduleItem.getStatus() == CLASSROOM_FREE ? "Свободна" : "Занята");
-                if (currScheduleItem.getStatus() == CLASSROOM_FREE) {
-                    statusTextView.setText("Свободна");
-                    descriptionTextView.setText("");
-                    addDesciptionEditText.setEnabled(true);
-                    changeStatusButton.setText("Занять");
-                } else {
-                    statusTextView.setText("Занята");
-                    String description = currScheduleItem.getDescription() != null ? currScheduleItem.getDescription() : "Описание отсутствует";
-                    descriptionTextView.setText(description);
-                    addDesciptionEditText.setEnabled(false);
-                    changeStatusButton.setText("Освободить");
-                }
+                updateActivity();
             }
 
             @Override
@@ -209,29 +192,12 @@ public class ChangeStatusActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, lessonNumberForSpinner);
         lessonNumberSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lessonNumberSpinner.setAdapter(lessonNumberSpinnerAdapter);
-        lessonNumberSpinner.setSelection(0); // TODO может сломаться
+        lessonNumberSpinner.setSelection(0);
 
         lessonNumberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String campus = campusSpinner.getSelectedItem().toString();
-                String classroom_name = classroomSpinner.getSelectedItem().toString();
-                int lesson_number = lessonNumberSpinner.getSelectedItemPosition() + 1;
-                ScheduleItem currScheduleItem = mDBHelper.getScheduleItemForChangeStatus(campus, classroom_name, lesson_number);
-
-                statusTextView.setText(currScheduleItem.getStatus() == CLASSROOM_FREE ? "Свободна" : "Занята");
-                if (currScheduleItem.getStatus() == CLASSROOM_FREE) {
-                    statusTextView.setText("Свободна");
-                    descriptionTextView.setText("");
-                    addDesciptionEditText.setEnabled(true);
-                    changeStatusButton.setText("Занять");
-                } else {
-                    statusTextView.setText("Занята");
-                    String description = currScheduleItem.getDescription() != null ? currScheduleItem.getDescription() : "Описание отсутствует";
-                    descriptionTextView.setText(description);
-                    addDesciptionEditText.setEnabled(false);
-                    changeStatusButton.setText("Освободить");
-                }
+                updateActivity();
             }
 
             @Override
@@ -247,9 +213,15 @@ public class ChangeStatusActivity extends AppCompatActivity {
             return;
         }
 
-        String email = mDBHelper.getServiceVars().email;
+        campusSpinner.setEnabled(false);
+        classroomSpinner.setEnabled(false);
+        lessonNumberSpinner.setEnabled(false);
+        addDesciptionEditText.setEnabled(false);
+        changeStatusButton.setEnabled(false);
+
+        String email = mDBHelper.getServiceVars().getEmail();
         String campus_name = campusSpinner.getSelectedItem().toString();
-        String classroom_name = classroomSpinner.getSelectedItem().toString();
+        final String classroom_name = classroomSpinner.getSelectedItem().toString();
         int lesson_number = lessonNumberSpinner.getSelectedItemPosition() + 1;
 
         ScheduleItem currScheduleItem = mDBHelper.getScheduleItemForChangeStatus(campus_name, classroom_name, lesson_number);
@@ -280,6 +252,12 @@ public class ChangeStatusActivity extends AppCompatActivity {
                 ChangeStatusActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        campusSpinner.setEnabled(true);
+                        classroomSpinner.setEnabled(true);
+                        lessonNumberSpinner.setEnabled(true);
+                        addDesciptionEditText.setEnabled(true);
+                        changeStatusButton.setEnabled(true);
+
                         Toast.makeText(ChangeStatusActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -293,23 +271,71 @@ public class ChangeStatusActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (responseCode == CHANGE_STATUS_FAIL) {
+                            campusSpinner.setEnabled(true);
+                            classroomSpinner.setEnabled(true);
+                            lessonNumberSpinner.setEnabled(true);
+                            addDesciptionEditText.setEnabled(true);
+                            changeStatusButton.setEnabled(true);
+
+
                             Toast.makeText(ChangeStatusActivity.this, "Отказано в изменении статуса", Toast.LENGTH_SHORT).show();
                         } else if (responseCode == CHANGE_STATUS_ACK) {
                             int new_classroom_status = changeStatusValues.getNew_classroom_status() == CLASSROOM_FREE_STRING ? CLASSROOM_FREE : CLASSROOM_BUSY;
                             mDBHelper.updateClassroomStatus(changeStatusValues.getCampus_name(), changeStatusValues.getClassroom_name(),
                                     changeStatusValues.getLesson_number(), new_classroom_status, changeStatusValues.getDescription());
 
-                            classroomSpinner.setSelection(classroomSpinner.getSelectedItemPosition()); // это вызывает обновление activity
+                            updateActivity();
+
+                            campusSpinner.setEnabled(true);
+                            classroomSpinner.setEnabled(true);
+                            lessonNumberSpinner.setEnabled(true);
+                            changeStatusButton.setEnabled(true);
+
                             Toast.makeText(ChangeStatusActivity.this, "Статус аудитории изменен", Toast.LENGTH_SHORT).show();
                         } else if (responseCode == SERVER_ERROR) {
-                            Toast.makeText(ChangeStatusActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
-                        } else
-                            Toast.makeText(ChangeStatusActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                            campusSpinner.setEnabled(true);
+                            classroomSpinner.setEnabled(true);
+                            lessonNumberSpinner.setEnabled(true);
+                            addDesciptionEditText.setEnabled(true);
+                            changeStatusButton.setEnabled(true);
 
+                            Toast.makeText(ChangeStatusActivity.this, getString(R.string.server_error), Toast.LENGTH_SHORT).show();
+                        } else {
+                            campusSpinner.setEnabled(true);
+                            classroomSpinner.setEnabled(true);
+                            lessonNumberSpinner.setEnabled(true);
+                            addDesciptionEditText.setEnabled(true);
+                            changeStatusButton.setEnabled(true);
+
+                            Toast.makeText(ChangeStatusActivity.this, "Unexpected HTTP code: " + Integer.toString(responseCode), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
         });
 
+    }
+
+    private void updateActivity() {
+        String campus = campusSpinner.getSelectedItem().toString();
+        String classroom_name = classroomSpinner.getSelectedItem().toString();
+        int lesson_number = lessonNumberSpinner.getSelectedItemPosition() + 1;
+        ScheduleItem currScheduleItem = mDBHelper.getScheduleItemForChangeStatus(campus, classroom_name, lesson_number);
+
+
+        statusTextView.setText(currScheduleItem.getStatus() == CLASSROOM_FREE ? "Свободна" : "Занята");
+        if (currScheduleItem.getStatus() == CLASSROOM_FREE) {
+            statusTextView.setText("Свободна");
+            descriptionTextView.setText("");
+            addDesciptionEditText.setEnabled(true);
+            changeStatusButton.setText("Занять");
+        } else {
+            statusTextView.setText("Занята");
+            String description = currScheduleItem.getDescription() != null ? currScheduleItem.getDescription() : "Описание отсутствует";
+            descriptionTextView.setText(description);
+            addDesciptionEditText.setText("");
+            addDesciptionEditText.setEnabled(false);
+            changeStatusButton.setText("Освободить");
+        }
     }
 }

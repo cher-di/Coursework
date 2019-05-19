@@ -18,14 +18,14 @@ public class ReauthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reauth);
 
         Intent intent = getIntent();
-        AuthValues authValues = new AuthValues();
-        authValues.email = intent.getStringExtra(EMAIL_IDENTIFIER);
-        authValues.city = intent.getStringExtra(CITY_IDENTIFIER);
+        ServiceValues serviceValues = new ServiceValues();
+        serviceValues.setEmail(intent.getStringExtra(EMAIL_IDENTIFIER));
+        serviceValues.setCity(intent.getStringExtra(CITY_IDENTIFIER));
 
         TextView emailTextView = (TextView) findViewById(R.id.activity_reauth_textview_email);
-        emailTextView.setText("Вы авторизованы как:\n" + authValues.email );
+        emailTextView.setText("Вы авторизованы как:\n" + serviceValues.getEmail() );
         TextView cityTextView = (TextView)findViewById(R.id.activity_reauth_textview_city);
-        cityTextView.setText("Город:\n" + authValues.city);
+        cityTextView.setText("Город:\n" + serviceValues.getCity());
     }
 
     public void onClickButtonLogOut(View view) {
