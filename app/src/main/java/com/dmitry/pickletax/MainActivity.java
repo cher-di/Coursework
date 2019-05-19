@@ -143,8 +143,14 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (show_message_for_user)
+                        if (show_message_for_user) {
+                            updateButton.setEnabled(true);
+                            classroomsButton.setEnabled(true);
+                            changeStatusButton.setEnabled(true);
+                            authButton.setEnabled(true);
+
                             Toast.makeText(MainActivity.this, "Проблемы с сетью", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -158,8 +164,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (responseCode == UPDATE_FAIL) {
-                            if (show_message_for_user)
+                            if (show_message_for_user) {
+                                updateButton.setEnabled(true);
+                                classroomsButton.setEnabled(true);
+                                changeStatusButton.setEnabled(true);
+                                authButton.setEnabled(true);
+
                                 Toast.makeText(MainActivity.this, "Ошибка обновления", Toast.LENGTH_SHORT).show();
+                            }
                         } else if (responseCode == UPDATE_ACK) {
                             if (show_message_for_user)
                                 Toast.makeText(MainActivity.this, "Идет обновление базы данных...", Toast.LENGTH_SHORT).show();
@@ -180,13 +192,14 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 protected void onPostExecute(Void aVoid) {
                                     super.onPostExecute(aVoid);
-                                    if (show_message_for_user)
-                                        Toast.makeText(MainActivity.this, "База данных обновлена", Toast.LENGTH_SHORT).show();
-
+                                    if (show_message_for_user) {
                                         updateButton.setEnabled(true);
                                         classroomsButton.setEnabled(true);
                                         changeStatusButton.setEnabled(true);
                                         authButton.setEnabled(true);
+
+                                        Toast.makeText(MainActivity.this, "База данных обновлена", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
                             UpdateDatabase updateDatabase = new UpdateDatabase(responseBody);
