@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +89,16 @@ public class ClassroomsActivity extends AppCompatActivity {
         recyclerAdapterClassrooms = new RecyclerAdapterClassrooms(this, classroomsForRecyclerView);
         classroomsRecyclerView.setAdapter(recyclerAdapterClassrooms);
 
+        // statusRadioGroup
         statusRadioGroup = (RadioGroup) findViewById(R.id.activity_classrooms_radiogroup_status);
+
+        statusRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                classroomsForRecyclerView.clear();
+                recyclerAdapterClassrooms.notifyDataSetChanged();
+            }
+        });
 
     }
 
@@ -103,5 +113,8 @@ public class ClassroomsActivity extends AppCompatActivity {
         classroomsForRecyclerView.clear();
         classroomsForRecyclerView.addAll(Arrays.asList(classrooms));
         recyclerAdapterClassrooms.notifyDataSetChanged();
+
+        if (classrooms.length == 0)
+            Toast.makeText(this, "Ничего не найдено", Toast.LENGTH_SHORT);
     }
 }

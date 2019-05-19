@@ -30,8 +30,8 @@
     <string name="activity_change_status_edittext_add_description">Добавить описание</string>
 
     <!--url-->
-    <string name="url_update"></string>
-    <string name="url_change_status"></string>
+    <string name="url_update">http://ec2-18-225-6-37.us-east-2.compute.amazonaws.com:8001/pickletax/databasedaemon/userstatusupdate/</string>
+    <string name="url_change_status">http://ec2-18-225-6-37.us-east-2.compute.amazonaws.com:8001/pickletax/databasedaemon/statuschange/</string>
     <string name="url_auth">http://ec2-18-225-6-37.us-east-2.compute.amazonaws.com:8001/pickletax/databasedaemon/authorization/</string>
 
     <!--service messages-->

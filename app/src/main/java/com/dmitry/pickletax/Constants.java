@@ -14,6 +14,8 @@ public interface Constants {
     public static final int AUTH_VALIDATION_FAIL = 400;
     public static final int AUTH_CODE_ACK = 200;
     public static final int AUTH_CODE_FAIL = 400;
+    public static final int CHANGE_STATUS_ACK = 200;
+    public static final int CHANGE_STATUS_FAIL = 400;
     public static final int SERVER_ERROR = 500;
 
     public static int CONNECT_TIMEOUT = 10;
@@ -21,6 +23,10 @@ public interface Constants {
     // эти константы нельзя менять, т.к. они жестко зашиты в базе данных
     public static final int CLASSROOM_FREE = 0;
     public static final int CLASSROOM_BUSY = 1;
+    public static final String CLASSROOM_FREE_STRING = "свободна";
+    public static final String CLASSROOM_BUSY_STRING = "занята";
+
+    public static final String NULL_DESCRIPTION = "null";
 
     public static final String EMAIL_IDENTIFIER = "com.dmitry.pickletax.email_edintifier";
     public static final String CITY_IDENTIFIER = "com.dmitry.pickletax.city_identifier";

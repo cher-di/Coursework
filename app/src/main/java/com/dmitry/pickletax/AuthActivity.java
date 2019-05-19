@@ -45,11 +45,11 @@ public class AuthActivity extends AppCompatActivity {
     private class VerificationValues {
         @SerializedName("email")
         @Expose
-        String email;
+        private String email;
 
         @SerializedName("verification_code")
         @Expose
-        String verification_code;
+        private String verification_code;
 
 
         public VerificationValues(String email, String verification_code) {

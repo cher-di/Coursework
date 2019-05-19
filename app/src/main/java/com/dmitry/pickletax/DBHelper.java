@@ -14,6 +14,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import static com.dmitry.pickletax.Constants.CLASSROOM_FREE;
+import static com.dmitry.pickletax.Constants.NULL_DESCRIPTION;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "main_database";
@@ -291,14 +292,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public Classroom[] getClassroomsForSpinner(String campus) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
-            Cursor cursor = db.rawQuery("SELECT name, type FROM classrooms WHERE campus_name = " + campus + ";", null);
+            Cursor cursor = db.rawQuery("SELECT name, type FROM classrooms WHERE campus_name = ?;", new String[]{campus});
 
             Classroom[] classrooms = new Classroom[cursor.getCount()];
             int i = 0;
             while (cursor.moveToNext()) {
-                classrooms[i].setName(cursor.getString(0));
-                classrooms[i].setType(cursor.getString(1));
-                classrooms[i].setCampus_name(campus);
+                classrooms[i] = new Classroom(cursor.getString(0), campus, cursor.getString(1));
                 i++;
             }
 
@@ -308,7 +307,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public ScheduleItem getScheduleItemForChangeStatus(String campus, String name, int lesson_number) {
+    public ScheduleItem getScheduleItemForChangeStatus(String campus, String classroom_name, int lesson_number) {
         SQLiteDatabase db = getReadableDatabase();
         if (db != null) {
             Cursor cursor = db.rawQuery("SELECT c.id, s.status, s.description FROM schedule s, classrooms c " +
@@ -316,7 +315,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     "c.campus_name = ? AND " +
                     "c.name = ? AND " +
                     "s.lesson_number = ?;",
-                    new String[]{campus, name, Integer.toString(lesson_number)});
+                    new String[]{campus, classroom_name, Integer.toString(lesson_number)});
 
             cursor.moveToFirst();
             int id = cursor.getInt(0);
@@ -326,6 +325,20 @@ public class DBHelper extends SQLiteOpenHelper {
             return new ScheduleItem(id, lesson_number, status, description);
         }
         return null;
+    }
+
+    public void updateClassroomStatus(String campus_name, String classroom_name, int lesson_number, int new_status, String new_description) {
+        new_description = new_description == NULL_DESCRIPTION ? "NULL" : new_description;
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            db.execSQL("UPDATE schedule SET " +
+                    "status = ?, " +
+                    "description = ? " +
+                    "WHERE classroom_id = (SELECT id FROM classrooms WHERE campus_name = ? AND name = ?) AND " +
+                    "lesson_number = ?;",
+                    new String[]{Integer.toString(new_status), new_description, campus_name, classroom_name, Integer.toString(lesson_number)});
+            db.close();
+        }
     }
 
     private static final class Factory implements SQLiteDatabase.CursorFactory {
